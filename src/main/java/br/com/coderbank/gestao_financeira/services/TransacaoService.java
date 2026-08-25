@@ -1,9 +1,14 @@
 package br.com.coderbank.gestao_financeira.services;
 
 import br.com.coderbank.gestao_financeira.dtos.requests.EntradaRequestDTO;
+import br.com.coderbank.gestao_financeira.dtos.requests.SaidaRequestDTO;
+import br.com.coderbank.gestao_financeira.dtos.responses.CategoriaResponseDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.TransacaoResponseDTO;
+import br.com.coderbank.gestao_financeira.entities.Categoria;
 import br.com.coderbank.gestao_financeira.entities.Transacao;
 import br.com.coderbank.gestao_financeira.entities.enums.TipoTransacao;
+import br.com.coderbank.gestao_financeira.exceptions.RecursoNaoEncontradoException;
+import br.com.coderbank.gestao_financeira.repositories.CategoriaRepository;
 import br.com.coderbank.gestao_financeira.repositories.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +21,9 @@ public class TransacaoService {
 
     @Autowired
     TransacaoRepository transacaoRepository;
+
+    @Autowired
+    CategoriaRepository categoriaRepository;
 
     public TransacaoResponseDTO cadastrarTransacaoDeEntrada(EntradaRequestDTO entradaRequestDTO){
 
@@ -91,6 +99,24 @@ public class TransacaoService {
                         null,
                         transacao.getDataCriacao()))
                 .toList();
+    }
+
+    public TransacaoResponseDTO cadastrarTransacaoDeSaida(SaidaRequestDTO saidaRequestDTO){
+
+        Transacao transacao = new Transacao();
+
+        transacao.setValor(saidaRequestDTO.valor());
+        transacao.setData(saidaRequestDTO.data());
+        transacao.setDescricao(saidaRequestDTO.descricao());
+        transacao.setTipo(TipoTransacao.SAIDA);
+
+        Categoria categoria = categoriaRepository.findById(saidaRequestDTO.idCategoria()).orElseThrow(() -> new RecursoNaoEncontradoException());
+        transacao.setCategoria( categoria);
+
+        var transacaoDeSaidaSalva = transacaoRepository.save(transacao);
+        var categoriaResponse = new CategoriaResponseDTO(categoria.getId(), categoria.getNome());
+
+        return new TransacaoResponseDTO(transacaoDeSaidaSalva.getIdTransacao(), transacaoDeSaidaSalva.getTipo(), transacaoDeSaidaSalva.getValor(),transacaoDeSaidaSalva.getData(),transacaoDeSaidaSalva.getDescricao(), categoriaResponse,transacaoDeSaidaSalva.getDataCriacao());
     }
 
 }

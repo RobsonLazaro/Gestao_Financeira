@@ -24,7 +24,7 @@ public class CategoriaService {
 
        categoriaNova.setNome(categoriaRequestDTO.nome());
 
-       var categoriaSalva =categoriaRepository.save(categoriaNova);
+       var categoriaSalva = categoriaRepository.save(categoriaNova);
 
        return new CategoriaResponseDTO(categoriaSalva.getId(),categoriaSalva.getNome());
 
