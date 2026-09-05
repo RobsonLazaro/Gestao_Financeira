@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/transacoes")
@@ -32,5 +33,10 @@ public class TransacaoControllerV1 {
     @PostMapping("/saidas")
     public ResponseEntity<TransacaoResponseDTO> cadastrarTransacaoDeSaida(@Valid @RequestBody SaidaRequestDTO saidaRequestDTO){
         return ResponseEntity.status(201).body(transacaoService.cadastrarTransacaoDeSaida(saidaRequestDTO));
+    }
+
+    @GetMapping("/saidas")
+    public ResponseEntity<List<TransacaoResponseDTO>> listarTransacaoDeSaida( @RequestParam(required = false) LocalDate dataInicio, @RequestParam(required = false) LocalDate dataFim, @RequestParam(required = false) UUID idCategoria){
+        return ResponseEntity.status(200).body(transacaoService.listarTransacoesDeSaida( dataInicio, dataFim,idCategoria));
     }
 }

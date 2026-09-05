@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TransacaoService {
@@ -119,4 +120,157 @@ public class TransacaoService {
         return new TransacaoResponseDTO(transacaoDeSaidaSalva.getIdTransacao(), transacaoDeSaidaSalva.getTipo(), transacaoDeSaidaSalva.getValor(),transacaoDeSaidaSalva.getData(),transacaoDeSaidaSalva.getDescricao(), categoriaResponse,transacaoDeSaidaSalva.getDataCriacao());
     }
 
+    public List<TransacaoResponseDTO> listarTransacoesDeSaida(LocalDate dataInicio, LocalDate dataFim, UUID idCategoria) {
+        if (dataInicio == null && dataFim == null && idCategoria == null){
+            return transacaoRepository.findByTipo(TipoTransacao.SAIDA)
+                    .stream()
+                    .map(transacao -> new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(transacao.getCategoria().getId(),transacao.getCategoria().getNome()),
+                            transacao.getDataCriacao()))
+                    .toList();
+        }
+
+        else if(dataInicio == null && dataFim == null && idCategoria != null){
+            return transacaoRepository.findByTipoAndCategoria_Id(TipoTransacao.SAIDA, idCategoria)
+                    .stream()
+                    .map(transacao -> new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(transacao.getCategoria().getId(), transacao.getCategoria().getNome()),
+                            transacao.getDataCriacao()))
+                    .toList();
+        }
+        else if (dataInicio != null && dataFim == null && idCategoria == null){
+            return transacaoRepository.findByTipoAndDataGreaterThanEqual(TipoTransacao.SAIDA, dataInicio)
+                    .stream()
+                    .map(transacao ->new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(
+                                    transacao.getCategoria().getId(),
+                                    transacao.getCategoria().getNome()
+                            ),
+                            transacao.getDataCriacao()))
+                    .toList();
+        } else if (dataInicio == null && dataFim != null && idCategoria == null) {
+            return transacaoRepository.findByTipoAndDataLessThanEqual(TipoTransacao.SAIDA, dataFim)
+                    .stream()
+                    .map(transacao ->new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(
+                                    transacao.getCategoria().getId(),
+                                    transacao.getCategoria().getNome()
+                            ),
+                            transacao.getDataCriacao()))
+                    .toList();
+        }
+        else if (dataInicio != null && dataFim != null && idCategoria == null) {
+            return transacaoRepository.findByTipoAndDataBetween(
+                            TipoTransacao.SAIDA,
+                            dataInicio,
+                            dataFim
+                    )
+                    .stream()
+                    .map(transacao -> new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(
+                                    transacao.getCategoria().getId(),
+                                    transacao.getCategoria().getNome()
+                            ),
+                            transacao.getDataCriacao()
+                    ))
+                    .toList();
+        }
+
+        else if (dataInicio != null && dataFim == null && idCategoria != null) {
+            return transacaoRepository.findByTipoAndCategoria_IdAndDataGreaterThanEqual(
+                            TipoTransacao.SAIDA,
+                            idCategoria,
+                            dataInicio
+                    )
+                    .stream()
+                    .map(transacao -> new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(
+                                    transacao.getCategoria().getId(),
+                                    transacao.getCategoria().getNome()
+                            ),
+                            transacao.getDataCriacao()
+                    ))
+                    .toList();
+        }
+
+        else if (dataInicio == null && dataFim != null && idCategoria != null) {
+            return transacaoRepository.findByTipoAndCategoria_IdAndDataLessThanEqual(
+                            TipoTransacao.SAIDA,
+                            idCategoria,
+                            dataFim
+                    )
+                    .stream()
+                    .map(transacao -> new TransacaoResponseDTO(
+                            transacao.getIdTransacao(),
+                            transacao.getTipo(),
+                            transacao.getValor(),
+                            transacao.getData(),
+                            transacao.getDescricao(),
+                            new CategoriaResponseDTO(
+                                    transacao.getCategoria().getId(),
+                                    transacao.getCategoria().getNome()
+                            ),
+                            transacao.getDataCriacao()
+                    ))
+                    .toList();
+        }
+
+        return transacaoRepository
+                .findByTipoAndCategoria_IdAndDataBetween(
+                TipoTransacao.SAIDA,
+                        idCategoria,
+                        dataInicio,
+                        dataFim
+                )
+                .stream()
+                .map(transacao -> new TransacaoResponseDTO(
+                        transacao.getIdTransacao(),
+                        transacao.getTipo(),
+                        transacao.getValor(),
+                        transacao.getData(),
+                        transacao.getDescricao(),
+                        new CategoriaResponseDTO(
+                                transacao.getCategoria().getId(),
+                                transacao.getCategoria().getNome()
+                        ),
+                        transacao.getDataCriacao()
+                        )
+                )
+                .toList();
+    }
+
+
+
 }
+
+

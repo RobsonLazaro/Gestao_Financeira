@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface TransacaoRepository extends JpaRepository <Transacao, UUID> {
 
     List<Transacao> findByTipo(TipoTransacao tipoTransacao);
+
     List<Transacao> findByTipoAndDataBetween(
             TipoTransacao tipo,
             LocalDate dataInicio,
@@ -25,4 +26,28 @@ public interface TransacaoRepository extends JpaRepository <Transacao, UUID> {
             TipoTransacao tipo,
             LocalDate dataFim
     );
+
+    List<Transacao> findByTipoAndCategoria_Id(
+            TipoTransacao tipo,
+            UUID idCategoria
+    );
+    List<Transacao> findByTipoAndCategoria_IdAndDataGreaterThanEqual(
+            TipoTransacao tipo,
+            UUID idCategoria,
+            LocalDate dataInicio
+    );
+
+    List<Transacao> findByTipoAndCategoria_IdAndDataLessThanEqual(
+            TipoTransacao tipo,
+            UUID idCategoria,
+            LocalDate dataFim
+    );
+
+    List<Transacao> findByTipoAndCategoria_IdAndDataBetween(
+            TipoTransacao tipo,
+            UUID idCategoria,
+            LocalDate dataInicio,
+            LocalDate dataFim
+    );
+
 }
