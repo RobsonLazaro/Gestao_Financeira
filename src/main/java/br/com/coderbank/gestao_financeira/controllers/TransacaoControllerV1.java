@@ -3,6 +3,7 @@ package br.com.coderbank.gestao_financeira.controllers;
 import br.com.coderbank.gestao_financeira.dtos.requests.EntradaRequestDTO;
 import br.com.coderbank.gestao_financeira.dtos.requests.SaidaRequestDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.TransacaoResponseDTO;
+import br.com.coderbank.gestao_financeira.entities.enums.TipoTransacao;
 import br.com.coderbank.gestao_financeira.services.TransacaoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,10 @@ public class TransacaoControllerV1 {
     @GetMapping("/saidas")
     public ResponseEntity<List<TransacaoResponseDTO>> listarTransacaoDeSaida( @RequestParam(required = false) LocalDate dataInicio, @RequestParam(required = false) LocalDate dataFim, @RequestParam(required = false) UUID idCategoria){
         return ResponseEntity.status(200).body(transacaoService.listarTransacoesDeSaida( dataInicio, dataFim,idCategoria));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TransacaoResponseDTO>> listarTransacoes(@RequestParam (required = false) TipoTransacao tipo, @RequestParam (required = false) UUID idCategoria, @RequestParam (required = false) LocalDate dataInicio, @RequestParam (required = false) LocalDate dataFim){
+        return ResponseEntity.status(200).body(transacaoService.listarTransacoes(tipo, idCategoria, dataInicio, dataFim));
     }
 }

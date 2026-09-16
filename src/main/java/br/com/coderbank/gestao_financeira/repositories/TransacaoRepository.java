@@ -3,12 +3,13 @@ package br.com.coderbank.gestao_financeira.repositories;
 import br.com.coderbank.gestao_financeira.entities.Transacao;
 import br.com.coderbank.gestao_financeira.entities.enums.TipoTransacao;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface TransacaoRepository extends JpaRepository <Transacao, UUID> {
+public interface TransacaoRepository extends JpaRepository <Transacao, UUID>, JpaSpecificationExecutor<Transacao> {
 
     List<Transacao> findByTipo(TipoTransacao tipoTransacao);
 

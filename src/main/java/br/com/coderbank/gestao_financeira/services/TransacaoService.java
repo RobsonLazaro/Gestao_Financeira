@@ -10,7 +10,9 @@ import br.com.coderbank.gestao_financeira.entities.enums.TipoTransacao;
 import br.com.coderbank.gestao_financeira.exceptions.RecursoNaoEncontradoException;
 import br.com.coderbank.gestao_financeira.repositories.CategoriaRepository;
 import br.com.coderbank.gestao_financeira.repositories.TransacaoRepository;
+import br.com.coderbank.gestao_financeira.specification.TransacaoSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -267,6 +269,33 @@ public class TransacaoService {
                         )
                 )
                 .toList();
+    }
+
+    public List<TransacaoResponseDTO> listarTransacoes(
+            TipoTransacao tipo,
+            UUID idCategoria,
+            LocalDate dataInicio,
+            LocalDate dataFim
+    ) {
+
+        Specification<Transacao> specification = TransacaoSpecification.porTipo(tipo).and(TransacaoSpecification.porCategoria(idCategoria)).and(TransacaoSpecification.porDataInicio(dataInicio)).and(TransacaoSpecification.porDataFim(dataFim));
+
+        return transacaoRepository.findAll(specification).stream().map(
+                transacao -> new TransacaoResponseDTO(
+                        transacao.getIdTransacao(),
+                        transacao.getTipo(),
+                        transacao.getValor(),
+                        transacao.getData(),
+                        transacao.getDescricao(),
+                        transacao.getCategoria() == null
+                                ? null
+                                : new CategoriaResponseDTO(
+                                transacao.getCategoria().getId(),
+                                transacao.getCategoria().getNome()
+                        ),
+                        transacao.getDataCriacao()
+                )
+        ).toList();
     }
 
 
