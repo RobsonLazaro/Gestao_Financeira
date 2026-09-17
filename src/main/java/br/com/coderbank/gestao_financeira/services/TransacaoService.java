@@ -2,6 +2,7 @@ package br.com.coderbank.gestao_financeira.services;
 
 import br.com.coderbank.gestao_financeira.dtos.requests.EntradaRequestDTO;
 import br.com.coderbank.gestao_financeira.dtos.requests.SaidaRequestDTO;
+import br.com.coderbank.gestao_financeira.dtos.requests.TransacaoPatchDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.CategoriaResponseDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.TransacaoResponseDTO;
 import br.com.coderbank.gestao_financeira.entities.Categoria;
@@ -299,6 +300,52 @@ public class TransacaoService {
     }
 
 
+    public TransacaoResponseDTO atualizarTransacao(
+            UUID id,
+            TransacaoPatchDTO transacaoPatchDTO) {
+
+        var transacao = transacaoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException());
+
+        if (transacaoPatchDTO.valor() != null) {
+            transacao.setValor(transacaoPatchDTO.valor());
+        }
+
+        if (transacaoPatchDTO.data() != null) {
+            transacao.setData(transacaoPatchDTO.data());
+        }
+
+        if (transacaoPatchDTO.descricao() != null) {
+            transacao.setDescricao(transacaoPatchDTO.descricao());
+        }
+
+        if (transacaoPatchDTO.idCategoria() != null
+                && transacao.getTipo() == TipoTransacao.SAIDA) {
+
+            var categoriaAtualizada = categoriaRepository
+                    .findById(transacaoPatchDTO.idCategoria())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException());
+
+            transacao.setCategoria(categoriaAtualizada);
+        }
+
+        var transacaoAtualizada = transacaoRepository.save(transacao);
+
+        return new TransacaoResponseDTO(
+                transacaoAtualizada.getIdTransacao(),
+                transacaoAtualizada.getTipo(),
+                transacaoAtualizada.getValor(),
+                transacaoAtualizada.getData(),
+                transacaoAtualizada.getDescricao(),
+                transacaoAtualizada.getCategoria() == null
+                        ? null
+                        : new CategoriaResponseDTO(
+                        transacaoAtualizada.getCategoria().getId(),
+                        transacaoAtualizada.getCategoria().getNome()
+                ),
+                transacaoAtualizada.getDataCriacao()
+        );
+    }
 
 }
 

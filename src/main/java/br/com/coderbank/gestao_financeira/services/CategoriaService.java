@@ -5,7 +5,6 @@ import br.com.coderbank.gestao_financeira.dtos.responses.CategoriaResponseDTO;
 import br.com.coderbank.gestao_financeira.entities.Categoria;
 import br.com.coderbank.gestao_financeira.exceptions.RecursoNaoEncontradoException;
 import br.com.coderbank.gestao_financeira.repositories.CategoriaRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
