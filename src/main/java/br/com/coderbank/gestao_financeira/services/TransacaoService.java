@@ -4,6 +4,8 @@ import br.com.coderbank.gestao_financeira.dtos.requests.EntradaRequestDTO;
 import br.com.coderbank.gestao_financeira.dtos.requests.SaidaRequestDTO;
 import br.com.coderbank.gestao_financeira.dtos.requests.TransacaoPatchDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.CategoriaResponseDTO;
+import br.com.coderbank.gestao_financeira.dtos.responses.PeriodoResponseDTO;
+import br.com.coderbank.gestao_financeira.dtos.responses.ResumoFinanceiroResponseDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.TransacaoResponseDTO;
 import br.com.coderbank.gestao_financeira.entities.Categoria;
 import br.com.coderbank.gestao_financeira.entities.Transacao;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -351,6 +354,19 @@ public class TransacaoService {
         var transacao = transacaoRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException());
 
         transacaoRepository.delete(transacao);
+    }
+
+    public ResumoFinanceiroResponseDTO gerarResumo(LocalDate dataInicio, LocalDate dataFim){
+        List<Transacao> byEntradaAndDataBetween = transacaoRepository.findByTipoAndDataBetween(TipoTransacao.ENTRADA, dataInicio, dataFim);
+        BigDecimal totalEntradas = byEntradaAndDataBetween.stream().map(Transacao::getValor).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<Transacao> bySaidaAndDataBetween = transacaoRepository.findByTipoAndDataBetween(TipoTransacao.SAIDA, dataInicio, dataFim);
+        BigDecimal totalSaidas = bySaidaAndDataBetween.stream().map(Transacao::getValor).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal saldo = totalEntradas.subtract(totalSaidas);
+
+        return new ResumoFinanceiroResponseDTO(new PeriodoResponseDTO(dataInicio,dataFim), totalEntradas, totalSaidas, saldo);
+
     }
 
 }

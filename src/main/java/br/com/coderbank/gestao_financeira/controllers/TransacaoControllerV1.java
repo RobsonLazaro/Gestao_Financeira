@@ -6,7 +6,6 @@ import br.com.coderbank.gestao_financeira.dtos.requests.TransacaoPatchDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.TransacaoResponseDTO;
 import br.com.coderbank.gestao_financeira.entities.enums.TipoTransacao;
 import br.com.coderbank.gestao_financeira.services.TransacaoService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
