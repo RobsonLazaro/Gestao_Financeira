@@ -3,8 +3,11 @@ package br.com.coderbank.gestao_financeira.services;
 import br.com.coderbank.gestao_financeira.dtos.requests.CategoriaRequestDTO;
 import br.com.coderbank.gestao_financeira.dtos.responses.CategoriaResponseDTO;
 import br.com.coderbank.gestao_financeira.entities.Categoria;
+import br.com.coderbank.gestao_financeira.exceptions.CategoriaRepetidaException;
+import br.com.coderbank.gestao_financeira.exceptions.CategoriaVinculadaATransacao;
 import br.com.coderbank.gestao_financeira.exceptions.RecursoNaoEncontradoException;
 import br.com.coderbank.gestao_financeira.repositories.CategoriaRepository;
+import br.com.coderbank.gestao_financeira.repositories.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +20,16 @@ public class CategoriaService {
     @Autowired
     CategoriaRepository categoriaRepository;
 
+    @Autowired
+    TransacaoRepository transacaoRepository;
+
     public CategoriaResponseDTO cadastrar(CategoriaRequestDTO categoriaRequestDTO){
 
-       Categoria categoriaNova = new Categoria();
+        if (categoriaRepository.existsByNome(categoriaRequestDTO.nome())) {
+            throw new CategoriaRepetidaException();
+        }
+
+        Categoria categoriaNova = new Categoria();
 
        categoriaNova.setNome(categoriaRequestDTO.nome());
 
@@ -53,6 +63,11 @@ public class CategoriaService {
     }
 
     public void  deletarCategoria(UUID uuid) {
+
+        if (transacaoRepository.existsByCategoria_Id(uuid)){
+            throw new CategoriaVinculadaATransacao();
+        }
+
         Categoria categoria = categoriaRepository.findById(uuid).orElseThrow(() -> new RecursoNaoEncontradoException());
 
         categoriaRepository.delete(categoria);

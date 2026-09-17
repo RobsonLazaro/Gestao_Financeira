@@ -11,6 +11,8 @@ import java.util.UUID;
 
 public interface TransacaoRepository extends JpaRepository <Transacao, UUID>, JpaSpecificationExecutor<Transacao> {
 
+    boolean existsByCategoria_Id(UUID idCategoria);
+
     List<Transacao> findByTipo(TipoTransacao tipoTransacao);
 
     List<Transacao> findByTipoAndDataBetween(
