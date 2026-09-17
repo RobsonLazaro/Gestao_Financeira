@@ -347,6 +347,12 @@ public class TransacaoService {
         );
     }
 
+    public void deletarTransacao(UUID id) {
+        var transacao = transacaoRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException());
+
+        transacaoRepository.delete(transacao);
+    }
+
 }
 
 

@@ -52,4 +52,10 @@ public class TransacaoControllerV1 {
     public ResponseEntity<TransacaoResponseDTO> atualizarTransacao(@PathVariable UUID idTransacao, @RequestBody TransacaoPatchDTO transacaoPatchDTO){
         return ResponseEntity.status(200).body(transacaoService.atualizarTransacao(idTransacao, transacaoPatchDTO));
     }
+
+    @DeleteMapping("/{idTransacao}")
+    public ResponseEntity<Void> deletarTransacao(@PathVariable UUID idTransacao) {
+        transacaoService.deletarTransacao(idTransacao);
+        return ResponseEntity.noContent().build();
+    }
 }
